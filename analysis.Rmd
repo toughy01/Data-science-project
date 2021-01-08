@@ -84,7 +84,8 @@ gene_prot_non_ess <- gene_prot %>%
 #Saving "gene_prot_ess" and "gene_prot_non_ess" to file to be used in
 #analysis
 write.table(gene_prot_ess, "processed_data/gene_prot_ess.txt")
-write.table(gene_prot_non_ess, "processed_data/gene_prot_non_ess.txt")         
+write.table(gene_prot_non_ess, "processed_data/gene_prot_non_ess.txt")      
+
 
 
 ````
