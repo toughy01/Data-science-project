@@ -1,0 +1,92 @@
+---
+title: "Data Science Project"
+author: "John Tough"
+date: "8 January 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      fig.retina = 3)
+```
+
+
+
+
+```{r required packages}
+library(tidyverse)
+library(janitor)
+
+```
+
+#INTRODUCTION
+
+
+
+
+
+
+
+#METHODS
+```{r Data import}
+load("raw_data/fission_yeast_data.Rda")
+
+#We have single row observations for 7009 gene ID's starting with "SPAC".
+#The data is genomic information derived from the schizosaccaharomyces
+#pombe yeast species AKA Fission Yeast...
+```
+
+
+
+
+<!-- Data needs some processing, some of the column headings are capitalized and an inconsistent use of column heading punctuation can be seen.Some column headings are quite lengthy too. some data missing too "NA" will remove where required.-->
+```{r Data Processing, include=FALSE}
+
+#Using the janitor::clean_names function to adhere to good naming practice
+gene <- gene %>%
+  janitor::clean_names() 
+
+
+
+#Shortening column names...
+gene <- gene %>%
+  rename(num_introns = number_introns,
+         prot_coding = protein_coding,
+         mrna_cop_per_cell = m_rna_copies_per_cell,
+         prot_cop_per_cell = protein_copies_per_cell,
+         mrna_stab = m_rna_stabilities,
+         genetic_div = genetic_diversity,
+         prot_half_life = protein_half_life,
+         nuc_dots = nuclear_dots,
+         nuc_env = nuclear_envelope,
+         gene_exp_rpkm = gene_expression_rpkm)
+
+
+
+#Filtering in accounted for gene expression reads for genes that encode proteins
+gene_prot <- gene %>%
+  filter(!is.na(gene_exp_rpkm)) %>%
+  filter(str_detect(prot_coding, "1"))
+
+
+#Creating a new object dataframe holding protein encoded genes that are #essential to fission yeast survival
+gene_prot_ess <- gene_prot %>%
+  filter(str_detect(essential, "1"))
+
+
+#Creating a new object dataframe holding protein encoded genes that are
+#not essential (to varying degrees) to fission yeast survival
+gene_prot_non_ess <- gene_prot %>%
+  filter(is.na(essential))
+           
+#Saving "gene_prot_ess" and "gene_prot_non_ess" to file to be used in
+#analysis
+write.table(gene_prot_ess, "processed_data/gene_prot_ess.txt")
+write.table(gene_prot_non_ess, "processed_data/gene_prot_non_ess.txt")         
+
+
+````
+
+
